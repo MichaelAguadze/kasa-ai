@@ -1,0 +1,344 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Voice Translation API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: translation
+    description: Voice translation operations
+  - name: calls
+    description: Phone call management
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /calls/initiate:
+    post:
+      operationId: initiateCall
+      tags: [calls]
+      summary: Initiate an outbound translated call
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitiateCallRequest"
+      responses:
+        "200":
+          description: Call initiated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitiateCallResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /calls/{callSid}/status:
+    get:
+      operationId: getCallStatus
+      tags: [calls]
+      summary: Get status of an active call
+      parameters:
+        - name: callSid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Call status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CallStatus"
+        "404":
+          description: Call not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /calls/{callSid}/end:
+    post:
+      operationId: endCall
+      tags: [calls]
+      summary: End an active call
+      parameters:
+        - name: callSid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Call ended
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "404":
+          description: Call not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /calls/history:
+    get:
+      operationId: getCallHistory
+      tags: [calls]
+      summary: Get recent call history with translations
+      responses:
+        "200":
+          description: List of past calls
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CallRecord"
+
+  /languages:
+    get:
+      operationId: getSupportedLanguages
+      tags: [translation]
+      summary: Get list of supported languages
+      responses:
+        "200":
+          description: Language list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Language"
+
+  /translate:
+    post:
+      operationId: translateText
+      tags: [translation]
+      summary: Translate text (test endpoint)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslateTextRequest"
+      responses:
+        "200":
+          description: Translated text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslateTextResponse"
+        "500":
+          description: Translation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    InitiateCallRequest:
+      type: object
+      properties:
+        toNumber:
+          type: string
+          description: Phone number to call in E.164 format
+        sourceLanguage:
+          type: string
+          description: Language code of the caller (e.g. en, es, fr)
+        targetLanguage:
+          type: string
+          description: Language code to translate to (e.g. es, en, zh)
+      required:
+        - toNumber
+        - sourceLanguage
+        - targetLanguage
+
+    InitiateCallResponse:
+      type: object
+      properties:
+        callSid:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+      required:
+        - callSid
+        - status
+
+    CallStatus:
+      type: object
+      properties:
+        callSid:
+          type: string
+        status:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+        duration:
+          type: number
+        transcript:
+          type: array
+          items:
+            $ref: "#/components/schemas/TranscriptEntry"
+      required:
+        - callSid
+        - status
+
+    TranscriptEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        timestamp:
+          type: string
+        originalText:
+          type: string
+        translatedText:
+          type: string
+        speaker:
+          type: string
+      required:
+        - id
+        - timestamp
+        - originalText
+        - translatedText
+        - speaker
+
+    CallRecord:
+      type: object
+      properties:
+        callSid:
+          type: string
+        toNumber:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+        startedAt:
+          type: string
+        endedAt:
+          type: string
+          nullable: true
+        duration:
+          type: number
+          nullable: true
+        status:
+          type: string
+        transcriptCount:
+          type: number
+      required:
+        - callSid
+        - toNumber
+        - sourceLanguage
+        - targetLanguage
+        - startedAt
+        - status
+        - transcriptCount
+
+    Language:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        nativeName:
+          type: string
+      required:
+        - code
+        - name
+        - nativeName
+
+    TranslateTextRequest:
+      type: object
+      properties:
+        text:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+      required:
+        - text
+        - sourceLanguage
+        - targetLanguage
+
+    TranslateTextResponse:
+      type: object
+      properties:
+        originalText:
+          type: string
+        translatedText:
+          type: string
+        sourceLanguage:
+          type: string
+        targetLanguage:
+          type: string
+      required:
+        - originalText
+        - translatedText
+        - sourceLanguage
+        - targetLanguage
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error

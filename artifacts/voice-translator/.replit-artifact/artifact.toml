@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Voice Translator"
+version = "1.0.0"
+id = "artifacts/voice-translator"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25910
+
+[services.development]
+run = "pnpm --filter @workspace/voice-translator run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/voice-translator", "run", "build" ]
+publicDir = "artifacts/voice-translator/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25910"
+BASE_PATH = "/"
