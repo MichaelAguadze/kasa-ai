@@ -278,6 +278,10 @@
       margin: 0 auto 1rem;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.6rem; font-weight: 700; color: white;
+      overflow: hidden; object-fit: cover;
+    }
+    .avatar img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
     }
     .team-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .2rem; }
     .team-card .role { font-size: .85rem; color: var(--green-md); font-weight: 600; margin-bottom: .6rem; }
@@ -531,23 +535,22 @@
 
     <div class="team-grid">
       <div class="team-card">
-        <div class="avatar" style="background: linear-gradient(135deg, #1A4D2E, #2E7D52);">MA</div>
+        <div class="avatar"><img src="images/michael.jpeg" alt="Michael Aguadze" /></div>
         <h3>Michael Aguadze</h3>
         <div class="role">Founder & Lead Developer</div>
         <p>Driving the vision and engineering behind Kasa AI — bridging technology and African linguistic heritage.</p>
       </div>
-      <!-- Add more team members below by duplicating the card above -->
-      <div class="team-card" style="border-style: dashed; opacity: .6;">
-        <div class="avatar" style="background: linear-gradient(135deg, #6B7280, #9CA3AF);">?</div>
-        <h3>Your name here</h3>
-        <div class="role">Open role</div>
-        <p>We're looking for linguists, engineers, and community advocates who believe in this mission.</p>
+      <div class="team-card">
+        <div class="avatar"><img src="images/frank.jpeg" alt="Frank Owusu" /></div>
+        <h3>Frank Owusu</h3>
+        <div class="role">Co-Founder</div>
+        <p>Shaping the strategy and growth of Kasa AI — committed to making African languages thrive in the digital age.</p>
       </div>
-      <div class="team-card" style="border-style: dashed; opacity: .6;">
-        <div class="avatar" style="background: linear-gradient(135deg, #6B7280, #9CA3AF);">?</div>
-        <h3>Your name here</h3>
-        <div class="role">Open role</div>
-        <p>Passionate about African languages or AI? We'd love to have you on board.</p>
+      <div class="team-card">
+        <div class="avatar"><img src="images/elikem.png" alt="Elikem Buertey" /></div>
+        <h3>Elikem Buertey</h3>
+        <div class="role">Co-Founder & Developer</div>
+        <p>Building the technology that powers Kasa AI — turning African language data into seamless, intelligent translations.</p>
       </div>
     </div>
   </div>
